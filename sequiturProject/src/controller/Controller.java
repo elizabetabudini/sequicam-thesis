@@ -30,8 +30,8 @@ import model.Zone;
 public class Controller {
 	static {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-		System.load("C:\\Users\\Utente\\Documents\\Workspace\\sequiturProject\\lib\\opencv_videoio_ffmpeg411_64.dll");
-		System.load("C:\\Users\\Utente\\Documents\\Workspace\\sequiturProject\\lib\\opencv_java411.dll");
+		System.load("C:\\Users\\Utente\\Documents\\Workspace\\tesiProject\\sequiturProject\\lib\\opencv_videoio_ffmpeg411_64.dll");
+		System.load("C:\\Users\\Utente\\Documents\\Workspace\\tesiProject\\sequiturProject\\lib\\opencv_java411.dll");
 	}
 	private String lastUIDMapped = null;
 
