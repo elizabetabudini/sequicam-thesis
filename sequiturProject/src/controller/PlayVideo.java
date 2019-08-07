@@ -19,7 +19,7 @@ public class PlayVideo extends JFrame {
 	static { 
 		   System.loadLibrary(Core.NATIVE_LIBRARY_NAME); 
 		   System.load("C:\\Users\\Utente\\Documents\\Workspace\\tesiProject\\sequiturProject\\lib\\opencv_videoio_ffmpeg411_64.dll");
-	        System.load("C:\\Users\\Utente\\Documents\\Workspace\\tesiProject\\sequiturProject\\lib\\opencv_java411.dll");
+	       System.load("C:\\Users\\Utente\\Documents\\Workspace\\tesiProject\\sequiturProject\\lib\\opencv_java411.dll");
 	   }
 	   static VideoCapture vCapture;
 	   static Mat mat;
@@ -35,7 +35,8 @@ public class PlayVideo extends JFrame {
 	    	  frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    	  frame.setVisible(true);
 		   
-		    String camera  = "rtsp://192.168.200.101:554/11";
+		    String camera  = "rtsp://192.168.200.101:554/12";
+	    	 // String camera  = "rtsp://192.168.200.103:554/1/h264major"; //PTZ
 		    VideoCapture vCapture = new VideoCapture();
 		    if (vCapture.open(camera)) {
 		        System.out.println("Camera opened from " + camera);
