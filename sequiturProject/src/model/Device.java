@@ -8,16 +8,16 @@ public class Device {
     private String color;
     private String shape;
     private String[] errorsCodes;
-    private int runtime;
+    private long runtime;
     private String[] warningsMsg;
     private String ip_address;
-    private int type;
+    private long type;
     private String uid;
-    private int nodestate;
+    private long nodestate;
     private String alias;
-    private int appcode;
+    private long appcode;
     private String[] warningsCodes;
-    private int family;
+    private long family;
     private String firmware;
     private String hardware;
 	public Boolean getConfigured() {
@@ -38,7 +38,7 @@ public class Device {
 	public String[] getErrorsCodes() {
 		return errorsCodes;
 	}
-	public int getRuntime() {
+	public long getRuntime() {
 		return runtime;
 	}
 	public String[] getWarningsMsg() {
@@ -47,25 +47,25 @@ public class Device {
 	public String getIp_address() {
 		return ip_address;
 	}
-	public int getType() {
+	public long getType() {
 		return type;
 	}
 	public String getUid() {
 		return uid;
 	}
-	public int getNodestate() {
+	public long getNodestate() {
 		return nodestate;
 	}
 	public String getAlias() {
 		return alias;
 	}
-	public int getAppcode() {
+	public long getAppcode() {
 		return appcode;
 	}
 	public String[] getWarningsCodes() {
 		return warningsCodes;
 	}
-	public int getFamily() {
+	public long getFamily() {
 		return family;
 	}
 	public String getFirmware() {

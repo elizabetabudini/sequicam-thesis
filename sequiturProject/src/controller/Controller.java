@@ -1,5 +1,7 @@
 package controller;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
@@ -11,12 +13,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.videoio.VideoCapture;
 
 import com.google.gson.Gson;
@@ -35,31 +41,63 @@ public class Controller {
 	}
 	private String lastUIDMapped = null;
 
-	public void getStreamFromCamera(String rtspAddress) {
-		VideoCapture vCapture = new VideoCapture();
-		Mat mat = new Mat();
-	    if (vCapture.open(rtspAddress)) {
-	        System.out.println("Camera opened from " + rtspAddress);
-	    } else {
-	        System.out.println("No camera found at " + rtspAddress);
-	    }
+	public void getStreamFromUID(String UID) throws IOException {
+		String rtspAddress="";
+		if(this.getPosition(UID).getZones().contains("lab")) {
+			rtspAddress= "rtsp://192.168.200.105:554/1/h264major"; //PTZ
+		}
+		if(this.getPosition(UID).getZones().contains("ufficio")) {
+			rtspAddress="rtsp://192.168.200.103:554/12";
+		}
+		if(this.getPosition(UID).getZones().contains("corridoio")) {
+			rtspAddress="rtsp://192.168.200.101:554/12";
+		}
+		
+		if(rtspAddress != "") {
+			VideoCapture vCapture = new VideoCapture();
+			Mat mat = new Mat();
+			final JFrame framecam = new JFrame("Camera Stream for target: "+UID);
+			JButton close = new JButton("Close");
+			final JPanel pCenterCam = new JPanel();
+			final JPanel pSouth = new JPanel();
+			pSouth.add(close);
+			close.addActionListener(e->{
+				framecam.setVisible(false);
+			});
+			
+			framecam.setSize(600, 400);
+			framecam.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			framecam.getContentPane().setLayout(new BorderLayout());
+			framecam.getContentPane().add(pCenterCam, BorderLayout.CENTER);
+			framecam.getContentPane().add(pSouth, BorderLayout.SOUTH);
+			
+			JLabel lblcam= new JLabel();
+			lblcam.setAlignmentX(Component.CENTER_ALIGNMENT);
+			pCenterCam.add(lblcam);
 
-      if (!vCapture.isOpened()) {
-          System.out.println("media failed to open");
-      } else {    
-    	  JLabel lblimg= new JLabel();
-    	  JFrame frame= new JFrame();
-    	  frame.setSize(500, 500);
-    	  frame.add(lblimg);
-    	  frame.setVisible(true);
-          while (vCapture.grab()) {
-              vCapture.retrieve(mat);
-              lblimg.setIcon(new ImageIcon(Mat2BufferedImage(mat)));
-          }
-          vCapture.release();
-      }
-   
-	}
+	        framecam.setVisible(true);
+			
+		    if (vCapture.open(rtspAddress)) {
+		        //System.out.println("Camera opened from " + rtspAddress);
+		    } else {
+		        System.out.println("No camera found at " + rtspAddress);
+		    }
+
+	      if (!vCapture.isOpened()) {
+		          System.out.println("media failed to open");
+		      } else {    
+		    	  
+		          //while (vCapture.grab()) {
+		    	  if (vCapture.grab()) {
+		              vCapture.retrieve(mat);
+	                  lblcam.setIcon(new ImageIcon(Mat2BufferedImage(mat)));
+		          }
+		          vCapture.release();
+		      }
+		}
+		
+   }
+	   
 	
 	public BufferedImage Mat2BufferedImage(Mat m) {
 

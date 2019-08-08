@@ -1,6 +1,5 @@
 package controller;
 
-import java.awt.BorderLayout;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import javax.swing.ImageIcon;
