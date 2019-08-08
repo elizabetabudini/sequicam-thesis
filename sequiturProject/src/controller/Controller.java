@@ -41,7 +41,7 @@ public class Controller {
 	}
 	private String lastUIDMapped = null;
 
-	public void getStreamFromUID(String UID) throws IOException {
+	public BufferedImage getStreamFromUID(String UID) throws IOException {
 		String rtspAddress="";
 		if(this.getPosition(UID).getZones().contains("lab")) {
 			rtspAddress= "rtsp://192.168.200.105:554/1/h264major"; //PTZ
@@ -52,10 +52,10 @@ public class Controller {
 		if(this.getPosition(UID).getZones().contains("corridoio")) {
 			rtspAddress="rtsp://192.168.200.101:554/12";
 		}
-		
+		Mat mat = new Mat();
 		if(rtspAddress != "") {
 			VideoCapture vCapture = new VideoCapture();
-			Mat mat = new Mat();
+			
 			final JFrame framecam = new JFrame("Camera Stream for target: "+UID);
 			JButton close = new JButton("Close");
 			final JPanel pCenterCam = new JPanel();
@@ -75,7 +75,7 @@ public class Controller {
 			lblcam.setAlignmentX(Component.CENTER_ALIGNMENT);
 			pCenterCam.add(lblcam);
 
-	        framecam.setVisible(true);
+	        //framecam.setVisible(true);
 			
 		    if (vCapture.open(rtspAddress)) {
 		        //System.out.println("Camera opened from " + rtspAddress);
@@ -94,7 +94,11 @@ public class Controller {
 		          }
 		          vCapture.release();
 		      }
+	      return Mat2BufferedImage(mat);
+		} else {
+			return null;
 		}
+		
 		
    }
 	   

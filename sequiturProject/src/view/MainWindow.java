@@ -3,6 +3,7 @@ package view;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 import javax.swing.JButton;
@@ -41,7 +42,7 @@ public class MainWindow {
 		
 		
 		framecam.setSize(600, 400);
-		framecam.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		framecam.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		framecam.getContentPane().setLayout(new BorderLayout());
 		framecam.getContentPane().add(pCenterCam, BorderLayout.CENTER);
 		framecam.getContentPane().add(pSouth, BorderLayout.SOUTH);
@@ -94,7 +95,19 @@ public class MainWindow {
 		
 		ActionListener task3 = new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-            	//lblcam.setIcon(new ImageIcon(c.getStreamFromCamera("rtsp://192.168.200.101:554/12")));
+            	try {
+            		BufferedImage img=c.getStreamFromUID(c.getLastUIDMapped());
+            		if(img != null) {
+            			lblcam.setIcon(new ImageIcon(img));
+            		} else {
+            			lblcam.setText("not visible");
+            		}
+					
+					
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
 		};
 		Timer timer3 = new Timer(10,task3); //show camera
@@ -113,13 +126,10 @@ public class MainWindow {
 		            	JButton bt = (JButton)e.getSource();
 					    lblflw.setText("Following target: "+bt.getText());
 	                    lblimg.setIcon(new ImageIcon(c.getMap(bt.getText())));
-	                    // lblcam.setIcon(new ImageIcon(c.getStreamFromCamera("rtsp://192.168.200.101:554/12")));
-	                    //framecam.setVisible(true);
-	                    
-		                c.getStreamFromUID(btn.getText());
-
 	                    timer2.start();
-	                    //timer3.start();
+	                    framecam.setTitle("Camera stream for target: "+bt.getText());
+	                    framecam.setVisible(true);
+	                    timer3.start();
 	            	} catch (IOException e1) {
 						// TODO Auto-generated catch block
 					}
