@@ -23,6 +23,7 @@ public class PlayVideo extends JFrame {
 	   static VideoCapture vCapture;
 	   static Mat mat;
 	   static ImageIcon image;
+	   //private String UID;
 	   
 
 	   public static void main(String[] args) {
@@ -35,7 +36,7 @@ public class PlayVideo extends JFrame {
 	    	  frame.setVisible(true);
 		   
 		    String camera  = "rtsp://192.168.200.101:554/12";
-	    	 // String camera  = "rtsp://192.168.200.103:554/1/h264major"; //PTZ
+	    	//  String camera  = "rtsp://192.168.200.105:554/1/h264major"; //PTZ
 		    VideoCapture vCapture = new VideoCapture();
 		    if (vCapture.open(camera)) {
 		        System.out.println("Camera opened from " + camera);

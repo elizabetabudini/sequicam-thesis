@@ -1,7 +1,5 @@
 package controller;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
@@ -13,18 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.videoio.VideoCapture;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -40,70 +28,36 @@ public class Controller {
 		System.load("C:\\Users\\Utente\\Documents\\Workspace\\tesiProject\\sequiturProject\\lib\\opencv_java411.dll");
 	}
 	private String lastUIDMapped = null;
-
-	public BufferedImage getStreamFromUID(String UID) throws IOException {
-		String rtspAddress="";
-		if(this.getPosition(UID).getZones().contains("lab")) {
-			rtspAddress= "rtsp://192.168.200.105:554/1/h264major"; //PTZ
-		}
-		if(this.getPosition(UID).getZones().contains("ufficio")) {
-			rtspAddress="rtsp://192.168.200.103:554/12";
-		}
-		if(this.getPosition(UID).getZones().contains("corridoio")) {
-			rtspAddress="rtsp://192.168.200.101:554/12";
-		}
-		Mat mat = new Mat();
-		if(rtspAddress != "") {
-			VideoCapture vCapture = new VideoCapture();
-			
-			final JFrame framecam = new JFrame("Camera Stream for target: "+UID);
-			JButton close = new JButton("Close");
-			final JPanel pCenterCam = new JPanel();
-			final JPanel pSouth = new JPanel();
-			pSouth.add(close);
-			close.addActionListener(e->{
-				framecam.setVisible(false);
-			});
-			
-			framecam.setSize(600, 400);
-			framecam.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-			framecam.getContentPane().setLayout(new BorderLayout());
-			framecam.getContentPane().add(pCenterCam, BorderLayout.CENTER);
-			framecam.getContentPane().add(pSouth, BorderLayout.SOUTH);
-			
-			JLabel lblcam= new JLabel();
-			lblcam.setAlignmentX(Component.CENTER_ALIGNMENT);
-			pCenterCam.add(lblcam);
-
-	        //framecam.setVisible(true);
-			
-		    if (vCapture.open(rtspAddress)) {
-		        //System.out.println("Camera opened from " + rtspAddress);
-		    } else {
-		        System.out.println("No camera found at " + rtspAddress);
-		    }
-
-	      if (!vCapture.isOpened()) {
-		          System.out.println("media failed to open");
-		      } else {    
-		    	  
-		          //while (vCapture.grab()) {
-		    	  if (vCapture.grab()) {
-		              vCapture.retrieve(mat);
-	                  lblcam.setIcon(new ImageIcon(Mat2BufferedImage(mat)));
-		          }
-		          vCapture.release();
-		      }
-	      return Mat2BufferedImage(mat);
-		} else {
-			return null;
-		}
-		
-		
-   }
-	   
+	private String lastAddress = "";
+	private String lastZone = "";
+	public static String LAB_ADDR="rtsp://192.168.200.100:554/1/h264major";
+	public static String UFFICIO_ADDR="rtsp://192.168.200.101:554/12";
+	public static String CORRIDOIO_ADDR="rtsp://192.168.200.102:554/12";
 	
-	public BufferedImage Mat2BufferedImage(Mat m) {
+	public void setLastAddress(String str) throws IOException {
+		List<String> zones=this.getPosition(str).getZones();
+		if(zones.contains("lab")) {
+			this.lastAddress=Controller.LAB_ADDR;
+			this.lastZone="lab";
+			return;
+		}
+		if(zones.contains("ufficio")) {
+			this.lastAddress=Controller.UFFICIO_ADDR;
+			this.lastZone="ufficio";
+			return;
+		}
+		if(zones.contains("corridoio")) {
+			this.lastAddress=Controller.CORRIDOIO_ADDR;
+			this.lastZone="corridoio";
+			return;
+		}
+		
+		this.lastAddress="";
+		this.lastZone="";
+		
+	}
+	
+	public static BufferedImage Mat2BufferedImage(Mat m) {
 
 		int type = BufferedImage.TYPE_BYTE_GRAY;
 		if (m.channels() > 1) {
@@ -188,6 +142,15 @@ public class Controller {
 
 	public String getLastUIDMapped() {
 		return lastUIDMapped;
+	}
+
+
+	public String getLastAddress() {
+		return lastAddress;
+	}
+
+	public String getLastZone() {
+		return lastZone;
 	}
 
 }
