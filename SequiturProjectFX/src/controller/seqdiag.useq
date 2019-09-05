@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence-diagram version="1.2.3" icons="true" automaticImage="PNG" generate-combined-fragments="true">  
+  <object id="1" language="java" name="controller.MainWindowController" project="SequiturProjectFX" 
+    file="/SequiturProjectFX/src/controller/MainWindowController.java" binary="false" label="mainWindowController" 
+    type="class" autoSize="true">    
+    <position height="-1" width="-1" x="495" y="0"/>    
+    <execution id="2">      
+      <position height="572" width="0" x="0" y="125"/>    
+    </execution>  
+  </object>  
+  <object id="5" language="java" name="controller.MainWindowController" project="SequiturProjectFX" 
+    file="/SequiturProjectFX/src/controller/MainWindowController.java" binary="false" label="mainWindowController1" 
+    type="class" autoSize="true">    
+    <position height="0" width="0" x="0" y="0"/>    
+    <execution id="4">      
+      <position height="530" width="0" x="0" y="146"/>    
+    </execution>    
+    <execution id="13">      
+      <position height="21" width="0" x="0" y="356"/>    
+    </execution>    
+    <execution id="15">      
+      <position height="21" width="0" x="0" y="408"/>    
+    </execution>    
+    <execution id="17">      
+      <position height="21" width="0" x="0" y="460"/>    
+    </execution>    
+    <execution id="23">      
+      <position height="21" width="0" x="0" y="634"/>    
+    </execution>  
+  </object>  
+  <object id="24" language="java" name="controller.ServerController" project="SequiturProjectFX" 
+    file="/SequiturProjectFX/src/controller/ServerController.java" binary="false" label="c" type="class" autoSize="true">    
+    <position height="0" width="0" x="0" y="0"/>    
+    <execution id="7">      
+      <position height="21" width="0" x="0" y="167"/>    
+    </execution>    
+    <execution id="9">      
+      <position height="21" width="0" x="0" y="209"/>    
+    </execution>    
+    <execution id="11">      
+      <position height="21" width="0" x="0" y="283"/>    
+    </execution>  
+  </object>  
+  <object id="25" language="java" name="java.util.ArrayList" project="SequiturProjectFX" 
+    file="C:/Program Files/Java/jre1.8.0_221/lib/rt.jar" binary="true" type="class" autoSize="true">    
+    <position height="0" width="0" x="0" y="0"/>  
+  </object>  
+  <object id="26" language="java" name="javafx.scene.control.ChoiceBox" project="SequiturProjectFX" 
+    file="C:/Program Files/Java/jre1.8.0_221/lib/ext/jfxrt.jar" binary="true" label="worldID" type="class" 
+    autoSize="true">    
+    <position height="0" width="0" x="0" y="0"/>    
+    <execution id="19">      
+      <position height="21" width="0" x="0" y="529"/>    
+    </execution>  
+  </object>  
+  <object id="27" language="java" name="javafx.scene.control.SingleSelectionModel" project="SequiturProjectFX" 
+    file="C:/Program Files/Java/jre1.8.0_221/lib/ext/jfxrt.jar" binary="true" type="class" autoSize="true">    
+    <position height="0" width="0" x="0" y="0"/>    
+    <execution id="21">      
+      <position height="21" width="0" x="0" y="571"/>    
+    </execution>  
+  </object>  
+  <combined-fragment id="28" interaction-operator="OPT">    
+    <interaction-operand id="29" constraint="!worldID.getItems().isEmpty()">      
+      <fragment refId="18"/>      
+      <fragment refId="20"/>      
+      <fragment refId="22"/>    
+    </interaction-operand>  
+  </combined-fragment>  
+  <message id="3" operation="initialize(java.net.URL,java.util.ResourceBundle):void" asynchronous="false">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="4"/>  
+  </message>  
+  <message id="6" operation="ServerController()" asynchronous="false">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="7"/>  
+  </message>  
+  <message id="8" operation="setCameraList(java.util.List&lt;model.Camera&gt;):void" asynchronous="false">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="9"/>  
+  </message>  
+  <message id="10" operation="addDefaultCameras():void" asynchronous="false" x="245" y="259">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="11"/>  
+  </message>  
+  <message id="12" operation="openCameras():void" asynchronous="false">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="13"/>  
+  </message>  
+  <message id="14" operation="setListeners():void" asynchronous="false">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="15"/>  
+  </message>  
+  <message id="16" operation="populateWorld():void" asynchronous="false">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="17"/>  
+  </message>  
+  <message id="18" operation="getSelectionModel():javafx.scene.control.SingleSelectionModel&lt;T&gt;" 
+    asynchronous="false">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="19"/>  
+  </message>  
+  <message id="20" operation="selectFirst():void" asynchronous="false">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="21"/>  
+  </message>  
+  <message id="22" operation="populateView():void" asynchronous="false">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="23"/>  
+  </message>
+</sequence-diagram>
