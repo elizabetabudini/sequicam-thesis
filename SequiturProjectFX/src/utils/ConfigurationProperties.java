@@ -73,7 +73,7 @@ public class ConfigurationProperties {
     public static synchronized void setProperties(List<Camera> list) throws IOException {
 
     	
-		JsonWriter  writer = new JsonWriter(new FileWriter(System.getProperty("user.home") + System.getProperty("file.separator") + fileProperties));
+		JsonWriter  writer = new JsonWriter(new FileWriter(System.getProperty("user.home")+ System.getProperty("file.separator") + "Sequicam"+ System.getProperty("file.separator") + fileProperties));
 		writer.setIndent("  ");
 		if(!list.isEmpty()) {
 			writer.beginArray();

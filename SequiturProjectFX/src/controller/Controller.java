@@ -5,8 +5,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import javafx.scene.image.Image;
-
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -20,20 +18,11 @@ import model.World;
 import model.Zone;
 import utils.ConfigurationProperties;
 
-import org.opencv.core.Core;
-
 /**
  *
  * @author Utente
  */
 public class Controller {
-	static {
-		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-		File lib = new File("../SequiturProjectFX/lib/" + System.mapLibraryName("opencv_videoio_ffmpeg411_64"));
-		System.load(lib.getAbsolutePath());
-		File lib2 = new File("../SequiturProjectFX/lib/" + System.mapLibraryName("opencv_java411"));
-		System.load(lib2.getAbsolutePath());
-	}
 	private String lastUIDMapped = null;
 	private String lastAddress = "";
 	private String lastZone = "";

@@ -42,9 +42,9 @@ import javafx.scene.control.TableColumn;
 public class MainWindowController {
 	static {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-		File lib = new File("../SequiturProjectFX/lib/" + System.mapLibraryName("opencv_videoio_ffmpeg411_64"));
+		File lib = new File(System.getProperty("user.home") + "/opencv/build/bin/opencv_videoio_ffmpeg411_64.dll");
 		System.load(lib.getAbsolutePath());
-		File lib2 = new File("../SequiturProjectFX/lib/" + System.mapLibraryName("opencv_java411"));
+		File lib2 = new File(System.getProperty("user.home") + "/opencv/build/java/x64/opencv_java411.dll");
 		System.load(lib2.getAbsolutePath());
 	}
 	@FXML

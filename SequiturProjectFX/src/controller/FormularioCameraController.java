@@ -58,6 +58,8 @@ public class FormularioCameraController implements Initializable {
 	@FXML
 	private Label hintZ;
 	@FXML
+	private Label hintAngle;
+	@FXML
 	private TextField diff;
 
 	private ChangeListener<String> checkEnableConfirm = (obVal, oldVal, newVal) -> {
@@ -88,9 +90,9 @@ public class FormularioCameraController implements Initializable {
 			disable = true;
 		}
 		if (diff.getText().matches("[-+]?[0-9]*\\.?[0-9]+")) {
-			this.hintZ.setVisible(false);
+			this.hintAngle.setVisible(false);
 		} else {
-			this.hintZ.setVisible(true);
+			this.hintAngle.setVisible(true);
 			disable = true;
 		}
 		this.save.setDisable(disable);

@@ -115,6 +115,11 @@
          </font>
       </Label>
       <Label text="orientation angle:" GridPane.columnIndex="4" GridPane.rowIndex="7" />
+      <Label fx:id="hintAngle" text="ex.: 12.4" visible="false" GridPane.columnIndex="4" GridPane.rowIndex="9">
+         <font>
+            <Font name="System Italic" size="12.0" />
+         </font>
+      </Label>
       <JFXTextField fx:id="diff" alignment="CENTER" minHeight="30.0" GridPane.columnIndex="4" GridPane.rowIndex="8">
          <GridPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
