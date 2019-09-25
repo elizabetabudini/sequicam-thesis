@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="res"/>
+	<classpathentry kind="src" path="images">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="/home/elizabetabudini/opencv_build/opencv"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
 			<attribute name="module" value="true"/>
@@ -13,7 +19,14 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JavaFX12"/>
 	<classpathentry kind="lib" path="C:/Users/Utente/Documents/Workspace/SequiturProjectFX/lib/gson-2.8.5.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/opencv"/>
 	<classpathentry kind="lib" path="C:/Users/Utente/Documents/Workspace/SequiturProjectFX/lib/fontawesomefx-8.9.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Utente/Documents/Workspace/SequiturProjectFX/lib/jfoenix-8.0.8.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Utente/Documents/Workspace/SequiturProjectFX/lib/charm-glisten-4.4.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/charm"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/font"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/gson"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jfoenix"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/opencv"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

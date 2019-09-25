@@ -8,8 +8,10 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import model.AXISCamera;
 import model.Camera;
 import model.Position;
+import model.SV3CCamera;
 import model.Zone;
 
 import java.io.IOException;
@@ -17,6 +19,7 @@ import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -44,7 +47,7 @@ public class FormularioCameraController implements Initializable {
 	@FXML
 	private Button save;
 	private Camera cam;
-	private ServerController serverController;
+	private Controller controller;
 	private ObservableList<Zone> zoneList;
 	@FXML
 	private CheckBox PTZcheckbox;
@@ -59,8 +62,8 @@ public class FormularioCameraController implements Initializable {
 
 	private ChangeListener<String> checkEnableConfirm = (obVal, oldVal, newVal) -> {
 		boolean disable = true;
-		if (address.getText().equals("") || x.getText().equals("") || y.getText().equals("")
-				|| z.getText().equals("") || diff.getText().equals("")) {
+		if (address.getText().equals("") || x.getText().equals("") || y.getText().equals("") || z.getText().equals("")
+				|| diff.getText().equals("")) {
 			disable = true;
 		} else {
 			disable = false;
@@ -84,9 +87,14 @@ public class FormularioCameraController implements Initializable {
 			this.hintZ.setVisible(true);
 			disable = true;
 		}
+		if (diff.getText().matches("[-+]?[0-9]*\\.?[0-9]+")) {
+			this.hintZ.setVisible(false);
+		} else {
+			this.hintZ.setVisible(true);
+			disable = true;
+		}
 		this.save.setDisable(disable);
 	};
-	
 
 	// Event Listener on Button[#cancel].onAction
 	@FXML
@@ -111,10 +119,18 @@ public class FormularioCameraController implements Initializable {
 	public void onSave(ActionEvent event) {
 		Camera cam = null;
 		try {
-			cam = new Camera(this.address.getText(), this.zone.getSelectionModel().getSelectedItem(),
-					new Position(Double.valueOf(this.x.getText()), Double.valueOf(this.y.getText()),
-							Double.valueOf(this.z.getText())), Double.valueOf(this.diff.getText()),
-					this.PTZcheckbox.isSelected());
+			if (this.PTZcheckbox.isSelected()) {
+				cam = new AXISCamera(this.address.getText(), this.zone.getSelectionModel().getSelectedItem(),
+						new Position(Double.valueOf(this.x.getText()), Double.valueOf(this.y.getText()),
+								Double.valueOf(this.z.getText())),
+						Double.valueOf(this.diff.getText()), this.PTZcheckbox.isSelected());
+			} else {
+				cam = new SV3CCamera(this.address.getText(), this.zone.getSelectionModel().getSelectedItem(),
+						new Position(Double.valueOf(this.x.getText()), Double.valueOf(this.y.getText()),
+								Double.valueOf(this.z.getText())),
+						Double.valueOf(this.diff.getText()), this.PTZcheckbox.isSelected());
+			}
+
 		} catch (NumberFormatException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -126,8 +142,8 @@ public class FormularioCameraController implements Initializable {
 
 		Optional<ButtonType> result = alert.showAndWait();
 		if (result.get() == ButtonType.OK) {
-			serverController.getCameraList().remove(this.cam);
-			serverController.getCameraList().add(cam); // TODO
+			controller.getCameraList().remove(this.cam);
+			controller.getCameraList().add(cam);
 			close();
 		} else {
 			// ... user chose CANCEL or closed the dialog
@@ -142,10 +158,10 @@ public class FormularioCameraController implements Initializable {
 		currentStage.close();
 	}
 
-	public void initialize(Camera cam, int editIndex, ServerController serverController) {
+	public void initialize(Camera cam, int editIndex, Controller controller, String zoneset) {
 
-		this.serverController = serverController;
-		zoneList = FXCollections.observableArrayList(serverController.getZones());
+		this.controller = controller;
+		zoneList = FXCollections.observableArrayList(controller.getZones(zoneset));
 		this.zone.setItems(zoneList);
 
 		if (cam != null && editIndex >= 0) {
@@ -156,6 +172,7 @@ public class FormularioCameraController implements Initializable {
 			this.y.setText(String.valueOf(cam.getPos().getY()));
 			this.z.setText(String.valueOf(cam.getPos().getZ()));
 			this.diff.setText(String.valueOf(cam.getDiff()));
+			this.PTZcheckbox.selectedProperty().set(cam.isPtz());
 			this.zone.getSelectionModel().select(cam.getZone());
 			this.zone.getItems().forEach(e -> {
 				if (e.getName().equals(this.cam.getZone().getName()) && e.getId() == this.cam.getZone().getId()) {
@@ -168,7 +185,11 @@ public class FormularioCameraController implements Initializable {
 			this.x.setText("0.0");
 			this.y.setText("0.0");
 			this.z.setText("0.0");
+			this.diff.setText("0.0");
 		}
+		Platform.runLater(() -> {
+			this.address.requestFocus();
+		});
 
 	}
 

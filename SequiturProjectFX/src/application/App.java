@@ -1,5 +1,8 @@
 package application;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Optional;
 
 //import controller.MainWindowController;
@@ -14,18 +17,23 @@ import javafx.fxml.FXMLLoader;
 
 public class App extends Application {
 	@Override
-	public void start(Stage primaryStage) {
+	public void start(Stage primaryStage) throws IOException {
+		File dir = new File(System.getProperty("user.home") + System.getProperty("file.separator") + "Sequicam");
+		File file =new File(System.getProperty("user.home") + System.getProperty("file.separator") + "Sequicam"+System.getProperty("file.separator")+"log");		
+    	dir.mkdir();
+    	file.createNewFile();
+		PrintStream ps = new PrintStream(file);
+		System.setErr(ps);
+		System.setOut(ps);
 		try {
 			// load the FXML resource
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/FXMLMainWindow.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/Splash.fxml"));
 			// store the root element so that the controllers can use it
 			GridPane rootElement = (GridPane) loader.load();
 			
 			// create and style a scene
 			Scene scene = new Scene(rootElement);
-			scene.getStylesheets().add(getClass().getResource("/css/application.css").toExternalForm());
-			// create the stage with the given title and the previously created
-			// scene
+	
 			primaryStage.setTitle("Sequitur Project");
 			primaryStage.setScene(scene);
 			// show the GUI
@@ -53,5 +61,9 @@ public class App extends Application {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static void main(String[] args) {
+		launch(args);
 	}
 }

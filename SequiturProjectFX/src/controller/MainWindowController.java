@@ -2,21 +2,21 @@ package controller;
 
 import javafx.event.ActionEvent;
 
+import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.ResourceBundle;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
+import java.util.concurrent.ConcurrentLinkedQueue;
 import org.opencv.core.Core;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -26,9 +26,11 @@ import model.Camera;
 import model.Device;
 import model.Position;
 import model.World;
+import utils.ConfigurationProperties;
 import utils.Utils;
+import controller.Controller;
 import javafx.scene.control.Label;
-
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TableView;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -37,11 +39,13 @@ import javafx.scene.control.ChoiceBox;
 
 import javafx.scene.control.TableColumn;
 
-public class MainWindowController implements Initializable {
+public class MainWindowController {
 	static {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-		System.load("C:\\Users\\Utente\\Documents\\Workspace\\SequiturProjectFX\\lib\\opencv_videoio_ffmpeg411_64.dll");
-		System.load("C:\\Users\\Utente\\Documents\\Workspace\\SequiturProjectFX\\lib\\opencv_java411.dll");
+		File lib = new File("../SequiturProjectFX/lib/" + System.mapLibraryName("opencv_videoio_ffmpeg411_64"));
+		System.load(lib.getAbsolutePath());
+		File lib2 = new File("../SequiturProjectFX/lib/" + System.mapLibraryName("opencv_java411"));
+		System.load(lib2.getAbsolutePath());
 	}
 	@FXML
 	private TitledPane tagListPanel;
@@ -83,16 +87,23 @@ public class MainWindowController implements Initializable {
 	@FXML
 	private Button closeButton;
 	@FXML
+	private Button refresh;
+	@FXML
 	private ImageView currentMap;
 	@FXML
 	private Label zonelbl;
 	@FXML
 	private Label cameralbl;
 	@FXML
+	private Label connecting;
+	@FXML
 	private Button settings;
+	@FXML
+	private ProgressBar progress;
 	private static final String NOT_VISIBLE = "Tag not visible, there's no camera in this zone";
 	private static final String OUT_OF_ZONES = "Out of zones";
 	private static final String NO_TAGS = "No tags in this world";
+	private static final String NO_VALID = "Tag position out of Sequitur localization area";
 
 	private ObservableList<World> worldList;
 
@@ -100,65 +111,70 @@ public class MainWindowController implements Initializable {
 	private ChoiceBox<World> worldID;
 
 	private World actualWorld;
+	// private ArrayList<Position> lastPositions;
+	private ConcurrentLinkedQueue<Position> lastPositions;
 
 	// a timer for acquiring the video stream
 	private Timer timer1 = new Timer();
-	private Timer timer2 = new Timer();;
-	private ServerController server;
+	// private Timer timer2 = new Timer();
+	private Controller server;
 	private String cam = "";
-	//private Image no_image;
+	private Image no_image;
 	private Position pos;
 
-	@Override
-	public void initialize(URL url, ResourceBundle rb) {
-		//Passing FileInputStream object as a parameter 
-		//FileInputStream inputstream = null;
-		/*try {
-			inputstream = new FileInputStream("res/no-picture.jpg");
-			no_image = new Image(inputstream); 
-		} catch (FileNotFoundException e) {
-			System.out.println("Impossible to load image: "+ inputstream);
-		} */
+	public void initialize(String serveraddr) {
 		
-		server = new ServerController();
+		no_image = new Image(this.getClass().getClassLoader().getResourceAsStream("no_image.png"));
+		lastPositions = new ConcurrentLinkedQueue<>();
+		server = new Controller(serveraddr);
+		server.setCameraList(new ArrayList<Camera>());
+		try {
+			server.addDefaultCameras();
+		} catch (NumberFormatException | IOException e1) {
+			System.out.println("Impossible to load cameras from file");
+		}
+		Task<Boolean> task = new Task<Boolean>() {
+			@Override
+			public Boolean call() throws IOException {
+				server.openCameras();
+				return true;
+				
+			}
+		};
 
-		// debug only
-		server.setCameraList(new ArrayList<>());
-		server.addDefaultCameras(); // debug
-		openCameras();
+		task.setOnRunning((e) -> {
+			this.progress.setVisible(true);
+			this.connecting.setVisible(true);
+			System.out.println("loading cameras...");
+		});
+		task.setOnSucceeded((e) -> {
+			connecting.setVisible(false);
+			this.progress.setVisible(false);
+		});
+		task.setOnFailed((e) -> {
+			connecting.setVisible(false);
+			this.progress.setVisible(false);
+		});
+		new Thread(task).start();
 		setListeners();
 		populateWorld();
 		if (!worldID.getItems().isEmpty()) { // se ci sono mondi disponibili
 			worldID.getSelectionModel().selectFirst();
 			populateView();
-		}
-	}
-
-	public void openCameras() {
-		if (!server.getCameraList().isEmpty()) {
-			for (Camera c : server.getCameraList()) {
-				if (!c.isOpened()) {
-					c.openStream();
-					c.getFrame();
-				}
-			}
+		} else {
+			System.out.println("Non ci sono mondi in questo Environment");
 		}
 	}
 
 	/*
 	 ******* task to refresh current data table
 	 */
-	public class updateCameraAddressTask extends TimerTask {
+	public class updateCameraData extends TimerTask {
 		@Override
 		public void run() {
 			if (!tagTableView.getItems().isEmpty()) {
 				Position p = null;
-				try {
-					p = server.getPosition(server.getLastUIDMapped());
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				p = server.getPosition(server.getLastUIDMapped());
 				try {
 					server.setLastAddress(server.getLastUIDMapped());
 				} catch (IOException e) {
@@ -167,16 +183,37 @@ public class MainWindowController implements Initializable {
 				}
 
 				if (p != null) {
-					if (!p.getZones().isEmpty()) { // if the tag is inside the zones
+					List<String> zonelist = p.getZones();
+					if (!p.getValidity()) {
+						Platform.runLater(() -> {
+							cameralbl.setText(NO_VALID);
+							currentFrame.setImage(no_image);
+						});
+						return;
+					} else if (!zonelist.isEmpty()) { // if the tag is inside the zones
 						for (Camera c : server.getCameraList()) {
-							if (p.getZones().contains(c.getZone().getName())) { // which camera has the actual zone
-																				// covered
+							if (zonelist.contains(c.getZone().getName()) && c.isOpened()) { // which camera has the
+																							// actual zone
+								// covered
 								cam = c.getZone().getName();
 								final String camera = cam;
 								Platform.runLater(() -> {
 									cameralbl.setText(camera);
 									zonelbl.setText(zoneLabel.getText());
 								});
+
+								if (c.isPtz() && c.isOpened()) {
+
+									c.followTag(p);
+									// c.followTag(Utils.averagePos(lastPositions));
+								}
+								Image im = c.getActualFrame();
+
+								if (im != null) {
+									updateImageView(currentFrame, im);
+								} else {
+									updateImageView(currentFrame, no_image);
+								}
 								return;
 							}
 						}
@@ -184,26 +221,27 @@ public class MainWindowController implements Initializable {
 						Platform.runLater(() -> {
 							cameralbl.setText(OUT_OF_ZONES);
 							zonelbl.setText(zoneLabel.getText());
+							currentFrame.setImage(no_image);
 						});
 						return;
 					}
 					Platform.runLater(() -> {
 						cameralbl.setText(NOT_VISIBLE);
 						zonelbl.setText(zoneLabel.getText());
+						currentFrame.setImage(no_image);
 					});
 
 				}
 			} else {
 				Platform.runLater(() -> {
 					cameralbl.setText(NO_TAGS);
-					currentFrame.setImage(null);
+					currentFrame.setImage(no_image);
 				});
 			}
 		}
 	}
 
-	// TimerTask updateData = new TimerTask() {
-	public class updateDataTask extends TimerTask {
+	public class updateTagData extends TimerTask {
 
 		@Override
 		public void run() {
@@ -212,17 +250,15 @@ public class MainWindowController implements Initializable {
 					Device dev = tagTableView.getSelectionModel().getSelectedItem();
 					Image img = null;
 					pos = null;
-					try {
-						img = server.getMap(server.getLastUIDMapped());
-						if (dev != null) {
-							pos = server.getPosition(dev.getUid());
-						}
-
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					img = server.getMap(server.getLastUIDMapped());
+					if (dev != null) {
+						pos = server.getPosition(dev.getUid());
 					}
 					if (pos != null) {
+						if (lastPositions.size() > 10) {
+							lastPositions.clear();
+						}
+						lastPositions.add(pos);
 						final String posX = String.valueOf(pos.getX());
 						final String posY = String.valueOf(pos.getY());
 						final String posZ = String.valueOf(pos.getZ());
@@ -258,85 +294,6 @@ public class MainWindowController implements Initializable {
 		}
 	};
 
-
-
-	class CameraTask extends TimerTask {
-
-		private volatile boolean flagChangeCam = true;
-		private volatile boolean flag = true;
-
-		public void stopRunning() {
-			flag = false;
-			currentFrame.setImage(null);
-		}
-
-		public void checkCam() {
-			flagChangeCam = false;
-		}
-
-		@Override
-		public void run() {
-			if (!tagTableView.getItems().isEmpty()) {
-				while (flag) {
-					String rtspAddress = server.getLastAddress();
-					flagChangeCam = true;
-					if (rtspAddress != "") {
-						currentFrame.setVisible(true);
-						Camera cam = null;
-						String zone = server.getLastZone();
-						for (Camera camera : server.getCameraList()) {
-							if (camera.getZone().getName() == zone) {
-								cam = camera;
-							}
-						}
-						while (flagChangeCam) {
-							if (cameralbl.getText() == OUT_OF_ZONES || cameralbl.getText() == NOT_VISIBLE) {
-								updateImageView(currentFrame, null);
-							} else {
-								if (rtspAddress != server.getLastAddress()) {
-									break;
-								}
-								Image im = null;
-								if (cam == null) {
-									updateImageView(currentFrame, null);
-								} else {
-									if (cam.isPtz()) {
-										if(pos!= null) {
-											cam.followTag(pos);
-											
-										}
-										
-									}
-									im = cam.getActualFrame();
-								}
-
-								if (im != null) {
-									updateImageView(currentFrame, im);
-								}
-							}
-
-							try {
-								Thread.sleep(50);
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-
-						}
-					}
-					this.checkCam();
-				}
-			} else {
-				updateImageView(currentFrame, null);
-				Platform.runLater(() -> {
-					cameraLabel.setText(NO_TAGS);
-				});
-			}
-
-		}
-
-	}
-
 	private void setListeners() {
 		tagTableView.getSelectionModel().selectedItemProperty().addListener((obVal, oldVal, newVal) -> {
 			if (newVal != null) {
@@ -346,11 +303,11 @@ public class MainWindowController implements Initializable {
 				TagDetailsPanel.setText("Device details: " + newVal.getUid());
 				mapPanel.setText("Map for tag: " + newVal.getUid());
 				try {
-					if(server!=null) {
+					if (server != null) {
 						server.getMap(newVal.getUid());
 						server.setLastAddress(server.getLastUIDMapped());
 					}
-					
+
 				} catch (IOException e) {
 					System.out.println("Couldn't set lastUID mapped");
 				}
@@ -362,35 +319,72 @@ public class MainWindowController implements Initializable {
 		worldID.getSelectionModel().selectedItemProperty().addListener((obVal, oldVal, newVal) -> {
 			if (newVal != null) {
 				this.actualWorld = newVal;
+				server.setActualWorld(this.actualWorld);
 				populateView();
 			}
 		});
 	}
 
 	private void runTasks() {
-		timer1.schedule(new updateDataTask(), 0, 500);
-		timer1.schedule(new updateCameraAddressTask(), 0, 100);
-		timer2.schedule(new CameraTask(), 0);
+		timer1.schedule(new updateTagData(), 0, 50);
+		timer1.schedule(new updateCameraData(), 0, 50);
 	}
 
 	@FXML
 	private void openSettings(ActionEvent event) throws IOException {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/FXMLSettings.fxml"));
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/FXMLSettings.fxml"));
 		Parent root = (Parent) loader.load();
 		SettingsController controller = loader.<SettingsController>getController();
 
 		controller.initialize(server);
 
-		Scene scene = new Scene(root, 700, 400);
+		Scene scene = new Scene(root);
 		Stage stage = new Stage();
 		stage.setResizable(false);
 		stage.setScene(scene);
 		stage.setTitle("Settings");
 		stage.initModality(Modality.APPLICATION_MODAL);
 		stage.showAndWait();
-		openCameras();
-		cameraList = FXCollections.observableArrayList(server.getCameraList());
-		camerasTableView.setItems(cameraList);
+
+		Task<Boolean> task = new Task<Boolean>() {
+			@Override
+			public Boolean call() throws IOException {
+				cameraList = FXCollections.observableArrayList(server.getCameraList());
+				camerasTableView.setItems(cameraList);
+				ConfigurationProperties.setProperties(cameraList);
+				server.openCameras();
+				return true;
+			}
+		};
+
+		progress.progressProperty().bind(task.progressProperty());
+
+		task.setOnRunning((e) -> {
+			this.progress.setVisible(true);
+			this.connecting.setVisible(true);
+			System.out.println("Loading cameras...");
+		});
+		task.setOnSucceeded((e) -> {
+			connecting.setVisible(false);
+			this.progress.setVisible(false);
+		});
+		task.setOnFailed((e) -> {
+			connecting.setVisible(false);
+			this.progress.setVisible(false);
+		});
+		new Thread(task).start();
+	}
+
+	@FXML
+	private void onRefresh(ActionEvent event) {
+		populateWorld();
+		if (!worldID.getItems().isEmpty()) { // se ci sono mondi disponibili
+			worldID.getSelectionModel().selectFirst();
+			populateView();
+		} else {
+			System.out.println("Non ci sono mondi in questo Environment");
+		}
+
 	}
 
 	private void populateWorld() {
@@ -413,14 +407,15 @@ public class MainWindowController implements Initializable {
 		}
 		tagTableView.setItems(tagList);
 		this.tagUIDColumn.setCellValueFactory(device -> new SimpleStringProperty(device.getValue().getUid()));
-		this.tagAliasColumn.setCellValueFactory(device -> new SimpleStringProperty(device.getValue().getAlias()));
+		this.tagAliasColumn
+				.setCellValueFactory(device -> new SimpleStringProperty(device.getValue().getInfo().getAlias()));
 
 		camerasTableView.setItems(cameraList);
 		this.coveredZoneColumn
 				.setCellValueFactory(camera -> new SimpleStringProperty(camera.getValue().getZone().getName()));
 		this.PTZcolumn
-				.setCellValueFactory(camera -> new SimpleStringProperty(String.valueOf(camera.getValue().isPtz())));
-		
+				.setCellValueFactory(camera -> new SimpleStringProperty(String.valueOf(camera.getValue().isOpened())));
+
 		if (!tagTableView.getItems().isEmpty()) {
 			tagTableView.getSelectionModel().selectFirst();
 		}

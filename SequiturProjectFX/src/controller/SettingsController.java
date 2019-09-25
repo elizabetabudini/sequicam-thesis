@@ -8,7 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-
+import javafx.scene.control.Label;
 import javafx.beans.property.SimpleStringProperty;
 
 import java.io.IOException;
@@ -23,12 +23,15 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Camera;
 import javafx.scene.control.TableColumn;
 
 public class SettingsController implements Initializable {
+	@FXML
+	private GridPane settings_back;
 	@FXML
 	private Button cancel;
 	@FXML
@@ -51,9 +54,11 @@ public class SettingsController implements Initializable {
 	private Button modify;
 	@FXML
 	private Button save;
+	@FXML
+	private Label saving;
 
 	private ObservableList<Camera> cameraList;
-	private ServerController serverController;
+	private Controller controller;
 
 	/**
 	 * Initializes the controller class.
@@ -83,6 +88,7 @@ public class SettingsController implements Initializable {
 	}
 
 	private void close() {
+
 		Stage currentStage = (Stage) remove.getScene().getWindow();
 		currentStage.close();
 	}
@@ -134,7 +140,7 @@ public class SettingsController implements Initializable {
 	@FXML
 	public void onSave(ActionEvent event) {
 
-		serverController.setCameraList(cameraList);
+		controller.setCameraList(cameraList);
 		close();
 
 	}
@@ -156,11 +162,11 @@ public class SettingsController implements Initializable {
 	}
 
 	private void launchModal(Camera cam, int editIndex) throws IOException {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/FXMLFormularioCamera.fxml"));
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/FXMLFormularioCamera.fxml"));
 		Parent root = (Parent) loader.load();
 		FormularioCameraController controller = loader.<FormularioCameraController>getController();
 
-		controller.initialize(cam, editIndex, this.serverController);
+		controller.initialize(cam, editIndex, this.controller, this.controller.getActualWorld().getZone());
 
 		Scene scene = new Scene(root);
 		Stage stage = new Stage();
@@ -170,12 +176,12 @@ public class SettingsController implements Initializable {
 		}
 		stage.initModality(Modality.APPLICATION_MODAL);
 		stage.showAndWait();
-		initialize(this.serverController);
+		initialize(this.controller);
 	}
 
-	public void initialize(ServerController c) {
-		this.serverController = c;
-		cameraList = FXCollections.observableArrayList(serverController.getCameraList());
+	public void initialize(Controller c) {
+		this.controller = c;
+		cameraList = FXCollections.observableArrayList(controller.getCameraList());
 		CameraTable.setItems(cameraList);
 		this.AddressColumn.setCellValueFactory(camera -> new SimpleStringProperty(camera.getValue().getAddress()));
 		this.PositionColumn.setCellValueFactory(device -> new SimpleStringProperty(String

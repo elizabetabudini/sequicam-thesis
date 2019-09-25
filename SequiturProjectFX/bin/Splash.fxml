@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<GridPane stylesheets="css/application.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.SplashController">
+   <columnConstraints>
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+   </rowConstraints>
+   <children>
+      <StackPane prefHeight="180.0" prefWidth="323.0">
+         <children>
+            <VBox alignment="CENTER" minHeight="230.0" prefHeight="200.0" prefWidth="323.0">
+               <children>
+                  <Label text="Insert host:port for Sequitur server" />
+                  <JFXTextField fx:id="serveraddr" alignment="CENTER" text="192.168.0.102:8688">
+                     <VBox.margin>
+                        <Insets bottom="10.0" left="30.0" right="30.0" top="10.0" />
+                     </VBox.margin>
+                  </JFXTextField>
+                  <Label fx:id="serverError" text="Impossibile connettersi a questo indirizzo" visible="false" />
+                  <JFXButton fx:id="okbtn" mnemonicParsing="false" onAction="#onOK" text="Connect">
+                     <VBox.margin>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </VBox.margin>
+                  </JFXButton>
+               </children>
+            </VBox>
+         </children>
+      </StackPane>
+   </children>
+</GridPane>

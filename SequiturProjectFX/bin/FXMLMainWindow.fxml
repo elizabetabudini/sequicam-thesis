@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXProgressBar?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="606.0" prefWidth="1059.0" stylesheets="css/application.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainWindowController">
+  <columnConstraints>
+    <ColumnConstraints hgrow="SOMETIMES" maxWidth="269.3333435058594" minWidth="10.0" percentWidth="30.0" prefWidth="214.6666717529297" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="337.3333282470703" minWidth="10.0" percentWidth="30.0" prefWidth="337.3333282470703" />
+    <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" percentWidth="40.0" prefWidth="100.0" />
+  </columnConstraints>
+  <rowConstraints>
+      <RowConstraints maxHeight="30.0" minHeight="30.0" percentHeight="12.0" prefHeight="30.0" vgrow="SOMETIMES" />
+    <RowConstraints minHeight="50.0" percentHeight="12.0" prefHeight="0.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="324.0" minHeight="10.0" percentHeight="40.0" prefHeight="324.0" valignment="TOP" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="75.0" minHeight="10.0" percentHeight="40.0" prefHeight="24.0" vgrow="SOMETIMES" />
+      <RowConstraints percentHeight="7.0" vgrow="SOMETIMES" />
+  </rowConstraints>
+   <children>
+      <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+         <children>
+            <JFXButton fx:id="settings" mnemonicParsing="false" onAction="#openSettings" text="Camera Settings">
+               <graphic>
+                  <FontAwesomeIconView glyphName="COG" size="14" />
+               </graphic>
+               <font>
+                  <Font size="13.0" />
+               </font>
+               <HBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </HBox.margin>
+            </JFXButton>
+            <JFXButton fx:id="refresh" mnemonicParsing="false" onAction="#onRefresh" text="Refresh">
+               <graphic>
+                  <FontAwesomeIconView glyphName="REFRESH" />
+               </graphic>
+            </JFXButton>
+         </children></HBox>
+      <VBox alignment="TOP_CENTER" prefHeight="475.0" prefWidth="335.0" GridPane.rowIndex="2" GridPane.rowSpan="2">
+         <children>
+            <JFXProgressBar fx:id="progress" prefHeight="0.0" prefWidth="307.0" visible="false">
+               <VBox.margin>
+                  <Insets left="10.0" right="10.0" />
+               </VBox.margin>
+            </JFXProgressBar>
+            <TitledPane fx:id="camerasPanel" animated="false" collapsible="false" prefHeight="122.0" prefWidth="286.0" text="Active cameras">
+               <content>
+                  <TableView fx:id="camerasTableView" prefHeight="198.0" prefWidth="262.0">
+                     <columns>
+                        <TableColumn fx:id="coveredZoneColumn" editable="false" prefWidth="182.0" text="Covered zone" />
+                        <TableColumn fx:id="PTZcolumn" prefWidth="102.0" text="Opened" />
+                     </columns>
+                     <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                     </columnResizePolicy>
+                  </TableView>
+               </content>
+               <VBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </VBox.margin>
+            </TitledPane>
+            <TitledPane fx:id="tagListPanel" animated="false" collapsible="false" prefHeight="152.0" prefWidth="285.0" text="Tag List">
+               <content>
+                  <TableView fx:id="tagTableView" prefHeight="134.0" prefWidth="279.0">
+                    <columns>
+                      <TableColumn fx:id="tagUIDColumn" editable="false" prefWidth="75.0" text="UID" />
+                      <TableColumn fx:id="tagAliasColumn" prefWidth="75.0" text="Alias" />
+                    </columns>
+                     <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                     </columnResizePolicy>
+                  </TableView>
+               </content>
+               <VBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </VBox.margin>
+            </TitledPane>
+            <TitledPane fx:id="TagDetailsPanel" animated="false" collapsible="false" prefHeight="103.0" prefWidth="296.0" text="Tag details">
+               <content>
+                  <GridPane>
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <Label alignment="CENTER_RIGHT" text="X:" GridPane.halignment="RIGHT">
+                           <GridPane.margin>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </GridPane.margin>
+                        </Label>
+                        <Label text="Y:" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+                           <GridPane.margin>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </GridPane.margin>
+                        </Label>
+                        <Label text="Z:" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
+                           <GridPane.margin>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </GridPane.margin>
+                        </Label>
+                        <Label text="Zone:" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
+                           <GridPane.margin>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </GridPane.margin>
+                        </Label>
+                        <Label text="Label" GridPane.columnIndex="1" fx:id="xLabel">
+                           <GridPane.margin>
+                              <Insets />
+                           </GridPane.margin>
+                        </Label>
+                        <Label fx:id="yLabel" styleClass="dark" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label fx:id="zLabel" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Label fx:id="zoneLabel" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                     </children>
+                  </GridPane>
+               </content>
+               <VBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </VBox.margin>
+            </TitledPane>
+         </children>
+      </VBox>
+      <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="2" GridPane.rowIndex="2" GridPane.rowSpan="2">
+         <children>
+            <TitledPane fx:id="CameraPanel" animated="false" collapsible="false" prefHeight="252.0" prefWidth="398.0" text="Camera">
+               <content>
+                  <ImageView fx:id="currentFrame" fitHeight="226.0" fitWidth="382.0" pickOnBounds="true" preserveRatio="true" />
+               </content>
+               <VBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </VBox.margin>
+            </TitledPane>
+            <Label fx:id="cameralbl" />
+            <Label fx:id="zonelbl" />
+            <ImageView fitHeight="75.0" fitWidth="180.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../images/logo.jpg" />
+               </image>
+               <VBox.margin>
+                  <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+               </VBox.margin>
+            </ImageView>
+         </children>
+      </VBox>
+      <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.rowSpan="2">
+         <children>
+            <TitledPane fx:id="mapPanel" animated="false" collapsible="false" minWidth="100.0" prefHeight="367.0" prefWidth="186.0" text="Map">
+               <VBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </VBox.margin>
+               <content>
+                  <ImageView fx:id="currentMap" fitHeight="338.0" fitWidth="280.0" pickOnBounds="true" preserveRatio="true" />
+               </content>
+            </TitledPane>
+         </children>
+      </VBox>
+      <Label text="Sequitur " GridPane.columnSpan="3" GridPane.halignment="CENTER">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+         <children>
+            <ChoiceBox fx:id="worldID" prefHeight="25.0" prefWidth="165.0">
+               <HBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </HBox.margin>
+            </ChoiceBox>
+            <Label text="select World ID" />
+         </children>
+      </HBox>
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+         <children>
+            <Label fx:id="connecting" alignment="CENTER" text="Opening cameras, it may take a few minutes..." visible="false" />
+         </children>
+      </HBox>
+   </children>
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
+</GridPane>

@@ -1,7 +1,7 @@
 package model;
 
 public class World {
-	
+
 	private Integer id;
 
 	private String name;
@@ -114,8 +114,7 @@ public class World {
 
 	@Override
 	public String toString() {
-		return "[id=" + id + ", name=" + name + "]";
+		return "" + name + ", id=" + id;
 	}
-	
 
 }

@@ -2,6 +2,7 @@ package utils;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.opencv.core.Mat;
 
@@ -17,6 +18,7 @@ import model.Position;
  * 
  */
 public class Utils {
+
 	/**
 	 * Convert a Mat object (OpenCV) in the corresponding Image for JavaFX
 	 *
@@ -80,51 +82,64 @@ public class Utils {
 	 */
 	public static double getPanAngle(Position tagPos, Position cameraPos, double differenceAngle) {
 		double angle = 0.0;
-		double distanceX = Math.abs(cameraPos.getX() - tagPos.getX());
-		double distanceY = Math.abs(cameraPos.getY() - tagPos.getY());
-
-		if (tagPos.getX() < cameraPos.getX()) {
-			angle = Math.toDegrees(Math.atan(distanceY / distanceX));
-		} else if (tagPos.getX() > cameraPos.getX()) {
-			if (tagPos.getY() == cameraPos.getY()) {
-				angle = 180.0;
-			} else {
-				angle = Math.toDegrees(Math.atan(distanceX / distanceY)) + 90.0;
-			}
-		} else {
-			angle = 90.0;
+		double X = tagPos.getX() - cameraPos.getX();
+		double Y = tagPos.getY() - cameraPos.getY();
+		if (!(X == 0 && Y == 0)) {
+			angle = Math.toDegrees(Math.atan2(Y, X));
 		}
-
-		if (tagPos.getY() > cameraPos.getY()) {
-			return angle - differenceAngle;
-		} else {
-			return -angle - differenceAngle;
+		angle = -angle; // perch� i 2 quadranti positivi dell'atan2 sono i negativi della videocamera
+		angle += differenceAngle;
+		if (angle > 180) {
+			double s = angle - 180;
+			angle = -180 + s;
+//			angle-=360;
+		} else if (angle < -180) {
+			double s = -180 - angle;
+			angle = 180 - s;
+//			angle+=360;
 		}
+		return angle;
 
 	}
 
 	/**
 	 * Method for retrieving the tilt angle
 	 * 
-	 * @param tagPos    
-	 * 			device position (x, y, z)
-	 * @param cameraPos 
-	 * 			camera position (x, y, z)
-	 * @return 
-	 * 			tilt angle in degrees
+	 * @param tagPos    device position (x, y, z)
+	 * @param cameraPos camera position (x, y, z)
+	 * @return tilt angle in degrees
 	 */
 	public static double getTiltAngle(Position tagPos, Position cameraPos) {
 		double angle = 0.0;
-		if (cameraPos.getX() == tagPos.getX()) {
+		double d = Math
+				.sqrt((Math.pow(cameraPos.getX() - tagPos.getX(), 2) + Math.pow(cameraPos.getY() - tagPos.getY(), 2)));
+		if (d == 0) {
 			angle = 90.0;
 		} else {
-			double distanceX = Math.abs(cameraPos.getX() - tagPos.getX());
 			double distanceZ = Math.abs(cameraPos.getZ() - tagPos.getZ());
-			angle = Math.toDegrees(Math.atan(distanceZ / distanceX));
+			angle = Math.toDegrees(Math.atan(distanceZ / d));
 
 		}
 		return -angle;
 
+	}
+
+	public static Position averagePos(ConcurrentLinkedQueue<Position> lastPositions) {
+		double sumx = 0;
+		double sumy = 0;
+		double sumz = 0;
+		double x = 0;
+		double y = 0;
+		double z = 0;
+		for (Position position : lastPositions) {
+			sumx += position.getX();
+			sumy += position.getY();
+			sumz += position.getZ();
+		}
+		x = sumx / lastPositions.size();
+		y = sumy / lastPositions.size();
+		z = sumz / lastPositions.size();
+		return new Position(x, y, z);
 	}
 
 }
