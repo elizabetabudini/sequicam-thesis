@@ -1,4 +1,5 @@
 # SequiCam
+Demo: https://www.youtube.com/watch?v=6iXcSB5bExE
 Bachelor Thesis (Degree): https://amslaurea.unibo.it/19068/ </br>
 Author: Budini Elizabeta</br>
 Supervisor: Bevilacqua Alessandro</br>
